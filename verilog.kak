@@ -14,7 +14,7 @@ hook global BufSetOption filetype=verilog %{
 
 # Highlighting
 add-highlighter shared/verilog regions
-add-highlighter shared/verilog default-region group
+add-highlighter shared/verilog/code default-region group
 add-highlighter shared/verilog/string region '"' (?<!\\)(\\\\)*" fill string
 add-highlighter shared/verilog/comment_line region '//' $ fill comment
 add-highlighter shared/verilog/comment region /\* \*/ fill comment
