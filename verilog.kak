@@ -18,7 +18,7 @@ add-highlighter shared/verilog/code default-region group
 add-highlighter shared/verilog/string region '"' (?<!\\)(\\\\)*" fill string
 add-highlighter shared/verilog/comment_line region '//' $ fill comment
 add-highlighter shared/verilog/comment region /\* \*/ fill comment
-add-highlighter shared/verilog/macro region '`' \b meta
+add-highlighter shared/verilog/macro region '`' \b 0:value
 
 evaluate-commands %sh{
     keywords='always assign automatic cell deassign default defparam design disable edge genvar ifnone incdir instance liblist library localparam negedge noshowcancelled parameter posedge primitive pulsestyle_ondetect pulsestyle_oneventi release scalared showcancelled specparam strength table tri tri0 tri1 triand trior use vectored'
