@@ -1,7 +1,7 @@
 # Verilog for Kakoune
 
 # Detection
-hook global BufCreate .*[.]v %{
+hook global BufCreate .*\.v %{
     set-option buffer filetype verilog
 }
 
@@ -28,7 +28,7 @@ evaluate-commands %sh{
     join() { sep=$2; eval set -- $1; IFS="$sep"; echo "$*"; }
 
     # Add the language's grammar to the static completion list
-    printf %s\\n "declare-option str-list verilog_static_words $(join "${keywords} ${blocks} ${declarations} ${gates}" ' ')"
+    printf %s\\n "hook global WinSetOption 'filetype=verilog' %{ set-option window static_words $(join "${keywords} ${blocks} ${declarations} ${gates}" ' ') }"
 
 	# Highlight keywords
     printf %s "
@@ -36,7 +36,19 @@ evaluate-commands %sh{
         add-highlighter shared/verilog/code/ regex \b($(join "${blocks}" '|'))\b 0:attribute
         add-highlighter shared/verilog/code/ regex \b($(join "${declarations}" '|'))\b 0:type
         add-highlighter shared/verilog/code/ regex \b($(join "${gates}" '|'))\b 0:builtin
-        add-highlighter shared/verilog/code/ region '`' \b 0:value
 
     "
-	}
+}
+
+add-highlighter shared/verilog/code/ regex '\$\w+' 0:function
+add-highlighter shared/verilog/code/ regex '`\w+' 0:meta
+
+# Initialization
+
+hook global -group "verilog-highlight" WinSetOption "filetype=verilog" %{
+        add-highlighter window/verilog ref verilog
+}
+
+hook global -group "verilog-highlight" WinSetOption "filetype=(?!verilog)" %{
+        remove-highlighter window/verilog
+}
