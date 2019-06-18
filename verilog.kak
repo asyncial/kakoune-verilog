@@ -20,8 +20,8 @@ add-highlighter shared/verilog/comment_line region '//' $ fill comment
 add-highlighter shared/verilog/comment region /\* \*/ fill comment
 
 evaluate-commands %sh{
-    keywords='always assign automatic cell deassign default defparam design disable edge genvar ifnone incdir instance liblist library localparam negedge noshowcancelled parameter posedge primitive pulsestyle_ondetect pulsestyle_oneventi release scalared showcancelled specparam strength table tri tri0 tri1 triand trior use vectored'
-    blocks='case casex casez else endcase for forever if repeat wait while begin config end endconfig endfunction endgenerate endmodule endprimitive endspecify endtable endtask fork function generate initial join macromodule module specify task'
+    keywords='@ always assign automatic cell deassign default defparam design disable edge genvar ifnone incdir instance liblist library localparam negedge noshowcancelled parameter posedge primitive pulsestyle_ondetect pulsestyle_oneventi release scalared showcancelled specparam strength table tri tri0 tri1 triand trior use vectored wait'
+    blocks='case casex casez else endcase for forever if repeat while begin config end endconfig endfunction endgenerate endmodule endprimitive endspecify endtable endtask fork function generate initial join macromodule module specify task'
     declarations='event inout input integer output real realtime reg signed time trireg unsigned wand wor wire'
     gates='and or xor nand nor xnor buf not bufif0 notif0 bufif1 notif1 pullup pulldown pmos nmos cmos tran tranif1 tranif0'
 
@@ -36,19 +36,45 @@ evaluate-commands %sh{
         add-highlighter shared/verilog/code/ regex \b($(join "${blocks}" '|'))\b 0:attribute
         add-highlighter shared/verilog/code/ regex \b($(join "${declarations}" '|'))\b 0:type
         add-highlighter shared/verilog/code/ regex \b($(join "${gates}" '|'))\b 0:builtin
-
     "
 }
 
 add-highlighter shared/verilog/code/ regex '\$\w+' 0:function
 add-highlighter shared/verilog/code/ regex '`\w+' 0:meta
 
+# Indentation
+
+define-command -hidden verilog-indent-on-new-line %{
+    evaluate-commands -no-hooks -draft -itersel %{
+        # preserve previous line indent
+        try %{ execute-keys -draft K <a-&> }
+        # filter previous line
+        try %{ execute-keys -draft k : crystal-filter-around-selections <ret> }
+        # indent after start structure
+        try %{ execute-keys -draft k <a-x> <a-k> ^ \h * (case|casex|casez|else|for|forever|if|repeat|while|begin|config|fork|function|generate|initial|join|macromodule|module|specify|task)\b|(do\h*$|(.*\h+do(\h+\|[^\n]*\|)?\h*$)) <ret> j <a-gt> }
+        try %{
+          #previous line is empty, next is not
+          execute-keys -draft k <a-x> 2X <a-k> \A\n\n[^\n]+\n\z <ret>
+          #copy indent of next line
+          execute-keys -draft j <a-x> s ^\h+ <ret> y k P
+        }
+    }
+}
+
 # Initialization
 
+hook global WinSetOption filetype=verilog %{
+	hook window InsertChar \n -group verilog-indent verilog-indent-on-new-line
+}
+
 hook global -group "verilog-highlight" WinSetOption "filetype=verilog" %{
-        add-highlighter window/verilog ref verilog
+	add-highlighter window/verilog ref verilog
 }
 
 hook global -group "verilog-highlight" WinSetOption "filetype=(?!verilog)" %{
-        remove-highlighter window/verilog
+	remove-highlighter window/verilog
+}
+
+hook global WinSetOption filetype=(?!verilog).* %{
+	remove-hooks window verilog-indent
 }
