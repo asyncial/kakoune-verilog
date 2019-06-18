@@ -3,4 +3,7 @@ Basic Verilog integration in the kakoune editor. There my be issues like incorre
 
 ## Installation
 Via [plug.kak](https://github.com/andreyorst/plug.kak):
+
+Put this in you `kakrc`:
+
 `plug "asyncial/kakoune-verilog"`
