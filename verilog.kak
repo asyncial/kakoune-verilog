@@ -1,15 +1,15 @@
 # Verilog for Kakoune
 
 # Detection
-hook global BufCreate .*\.v %{
-    set-option buffer filetype verilog
+hook global WinCreate .*\.v %{
+    set-option window filetype verilog
 }
 
 # Set up comments
-hook global BufSetOption filetype=verilog %{
-	set-option buffer comment_block_begin /*
-	set-option buffer comment_block_end */
-	set-option buffer comment_line //
+hook global WinSetOption filetype=verilog %{
+	set-option window comment_block_begin /*
+	set-option window comment_block_end */
+	set-option window comment_line //
 }
 
 # Highlighting
