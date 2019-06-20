@@ -65,16 +65,10 @@ define-command -hidden verilog-indent-on-new-line %{
 
 hook global WinSetOption filetype=verilog %{
 	hook window InsertChar \n -group verilog-indent verilog-indent-on-new-line
+	hook -once -always window WinSetOption filetype=(?!verilog).* %{ remove-hooks window verilog-indent}
 }
 
 hook global -group "verilog-highlight" WinSetOption "filetype=verilog" %{
 	add-highlighter window/verilog ref verilog
-}
-
-hook global -group "verilog-highlight" WinSetOption "filetype=(?!verilog)" %{
-	remove-highlighter window/verilog
-}
-
-hook global WinSetOption filetype=(?!verilog).* %{
-	remove-hooks window verilog-indent
+	hook -once -always window WinSetOption filetype=(?!verilog).* %{ remove-highlighter window/c }
 }
