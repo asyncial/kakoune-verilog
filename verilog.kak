@@ -48,8 +48,6 @@ define-command -hidden verilog-indent-on-new-line %{
     evaluate-commands -no-hooks -draft -itersel %{
         # preserve previous line indent
         try %{ execute-keys -draft K <a-&> }
-        # filter previous line
-        try %{ execute-keys -draft k : crystal-filter-around-selections <ret> }
         # indent after start structure
         try %{ execute-keys -draft k <a-x> <a-k> ^ \h * (case|casex|casez|else|for|forever|if|repeat|while|begin|config|fork|function|generate|initial|join|macromodule|module|specify|task)\b|(do\h*$|(.*\h+do(\h+\|[^\n]*\|)?\h*$)) <ret> j <a-gt> }
         try %{
