@@ -20,15 +20,16 @@ add-highlighter shared/verilog/comment_line region '//' $ fill comment
 add-highlighter shared/verilog/comment region /\* \*/ fill comment
 
 evaluate-commands %sh{
-    keywords='@ always assign automatic cell deassign default defparam design disable edge genvar ifnone incdir instance liblist library localparam negedge noshowcancelled parameter posedge primitive pulsestyle_ondetect pulsestyle_oneventi release scalared showcancelled specparam strength table tri tri0 tri1 triand trior use vectored wait'
-    blocks='case casex casez else endcase for forever if repeat while begin config end endconfig endfunction endgenerate endmodule endprimitive endspecify endtable endtask fork function generate initial join macromodule module specify task'
+    keywords='@ assign automatic cell deassign default defparam design disable edge genvar ifnone incdir instance liblist library localparam negedge noshowcancelled parameter posedge primitive pulsestyle_ondetect pulsestyle_oneventi release scalared showcancelled specparam strength table tri tri0 tri1 triand trior use vectored wait'
+    blocks='always case casex casez else endcase for forever if repeat while begin config end endconfig endfunction endgenerate endmodule endprimitive endspecify endtable endtask fork function generate initial join macromodule module specify task'
     declarations='event inout input integer output real realtime reg signed time trireg unsigned wand wor wire'
     gates='and or xor nand nor xnor buf not bufif0 notif0 bufif1 notif1 pullup pulldown pmos nmos cmos tran tranif1 tranif0'
+    symbols='+ - = == != !== === ; <= ( )'
 
     join() { sep=$2; eval set -- $1; IFS="$sep"; echo "$*"; }
 
     # Add the language's grammar to the static completion list
-    printf %s\\n "hook global WinSetOption 'filetype=verilog' %{ set-option window static_words $(join "${keywords} ${blocks} ${declarations} ${gates}" ' ') }"
+    printf %s\\n "hook global WinSetOption 'filetype=verilog' %{ set-option window static_words $(join "${keywords} ${blocks} ${declarations} ${gates} ${symbols}" ' ') }"
 
 	# Highlight keywords
     printf %s "
@@ -36,6 +37,7 @@ evaluate-commands %sh{
         add-highlighter shared/verilog/code/ regex \b($(join "${blocks}" '|'))\b 0:attribute
         add-highlighter shared/verilog/code/ regex \b($(join "${declarations}" '|'))\b 0:type
         add-highlighter shared/verilog/code/ regex \b($(join "${gates}" '|'))\b 0:builtin
+        add-highlighter shared/verilog/code/ regex \b($(join "${symbols}" '|'))\b 0:operator
     "
 }
 
@@ -49,11 +51,11 @@ define-command -hidden verilog-indent-on-new-line %{
         # preserve previous line indent
         try %{ execute-keys -draft K <a-&> }
         # indent after start structure
-        try %{ execute-keys -draft k <a-x> <a-k> ^ \h * (case|casex|casez|else|for|forever|if|repeat|while|begin|config|fork|function|generate|initial|join|macromodule|module|specify|task)\b|(do\h*$|(.*\h+do(\h+\|[^\n]*\|)?\h*$)) <ret> j <a-gt> }
+        try %{ execute-keys -draft k <a-x> <a-k> ^ \h * (always|case|casex|casez|else|for|forever|if|repeat|while|begin|config|fork|function|generate|initial|join|macromodule|module|specify|task)\b|(do\h*$|(.*\h+do(\h+\|[^\n]*\|)?\h*$)) <ret> j <a-gt> }
         try %{
-          #previous line is empty, next is not
+          # previous line is empty, next is not
           execute-keys -draft k <a-x> 2X <a-k> \A\n\n[^\n]+\n\z <ret>
-          #copy indent of next line
+          # copy indent of next line
           execute-keys -draft j <a-x> s ^\h+ <ret> y k P
         }
     }
