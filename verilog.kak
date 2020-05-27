@@ -25,11 +25,12 @@ evaluate-commands %sh{
     declarations='event inout input integer output real realtime reg signed time trireg unsigned wand wor wire'
     gates='and or xor nand nor xnor buf not bufif0 notif0 bufif1 notif1 pullup pulldown pmos nmos cmos tran tranif1 tranif0'
     symbols='+ - = == != !== === ; <= ( )'
+    system_tasks='display write strobe monitor monitoron monitoroff displayb writeb strobeb monitorb displayo writeo strobeo monitoro displayh writeh strobeh monitorh fopen fclose frewind fflush fseek ftell fdisplay fwrite swrite fstrobe fmonitor fread fscanf fdisplayb fwriteb swriteb fstrobeb fmonitorb fdisplayo fwriteo swriteo fstrobeo fmonitoro fdisplayh fwriteh swriteh fstrobeh fmonitorh sscanf sdf_annotate'
 
     join() { sep=$2; eval set -- $1; IFS="$sep"; echo "$*"; }
 
     # Add the language's grammar to the static completion list
-    printf %s\\n "hook global WinSetOption 'filetype=verilog' %{ set-option window static_words $(join "${keywords} ${blocks} ${declarations} ${gates} ${symbols}" ' ') }"
+    printf %s\\n "hook global WinSetOption 'filetype=verilog' %{ set-option window static_words $(join "${keywords} ${blocks} ${declarations} ${gates} ${symbols} ${system_tasks}" ' ') }"
 
 	# Highlight keywords
     printf %s "
