@@ -44,6 +44,8 @@ evaluate-commands %sh{
 
 add-highlighter shared/verilog/code/ regex '\$\w+' 0:function
 add-highlighter shared/verilog/code/ regex '`\w+' 0:meta
+add-highlighter shared/verilog/code/ regex "\d+'[bodhBODH][1234567890abcdefABCDEF]+" 0:value
+add-highlighter shared/verilog/code/ regex "(?<=[^a-zA-Z_])\d+" 0:value
 
 # Indentation
 
